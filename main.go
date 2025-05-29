@@ -126,12 +126,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize UPS client: %v", err)
 	}
-	openAi, err := gpt.NewOpenAI(os.Getenv("OPENAI_MODEL"), os.Getenv("OPENAI_API_KEY"))
+
+	gptClient, err := initGPTClient()
 	if err != nil {
-		log.Fatalf("Failed to initialize OpenAI client: %v", err)
+		log.Fatalf("Failed to initialize GPT client: %v", err)
 	}
+
 	shipping.NewHandler(
-		shipping.NewManager(upsClient, openAi),
+		shipping.NewManager(upsClient, gptClient),
 	).RegisterRoutes(latest.Group("/shipping"))
 
 	httpPort := ":" + os.Getenv("HTTP_PORT")
@@ -155,4 +157,22 @@ func main() {
 	signal.Notify(stop, os.Interrupt)
 	<-stop
 
+}
+
+func initGPTClient() (gpt.GPT, error) {
+	if os.Getenv("GPT") == "gemini" {
+		gemini, err := gpt.NewGemini(os.Getenv("GEMINI_MODEL"), os.Getenv("GEMINI_API_KEY"))
+		if err != nil {
+			return nil, err
+		}
+
+		return gemini, nil
+	}
+
+	openAi, err := gpt.NewOpenAI(os.Getenv("OPENAI_MODEL"), os.Getenv("OPENAI_API_KEY"))
+	if err != nil {
+		return nil, err
+	}
+
+	return openAi, nil
 }

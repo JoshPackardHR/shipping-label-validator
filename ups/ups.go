@@ -41,7 +41,7 @@ func NewClient(clientId string, clientSecret string) (Client, error) {
 	}, nil
 }
 
-type PackageAddressType string
+type PackageAddressType string // @name PackageAddressType
 
 const PackageAddressTypeOrigin = "ORIGIN"
 const PackageAddressTypeDestination = "DESTINATION"
@@ -54,7 +54,14 @@ type Address struct {
 	PostalCode    string `json:"postalCode"`
 	CountryCode   string `json:"countryCode"`
 	Country       string `json:"country"`
-}
+} // @name Address
+
+type PackageAddress struct {
+	Type          PackageAddressType `json:"type"`
+	Name          string             `json:"name"`
+	AttentionName string             `json:"attentionName"`
+	Address       Address            `json:"address"`
+} // @name PackageAddress
 
 type TrackingDetails struct {
 	TrackResponse struct {
@@ -64,25 +71,20 @@ type TrackingDetails struct {
 			ShipperNumber string `json:"shipperNumber"`
 			PickupDate    string `json:"pickupDate"`
 			Package       []struct {
-				TrackingNumber string `json:"trackingNumber"`
-				PackageAddress []struct {
-					Type          PackageAddressType `json:"type"`
-					Name          string             `json:"name"`
-					AttentionName string             `json:"attentionName"`
-					Address       Address            `json:"address"`
-				} `json:"packageAddress"`
+				TrackingNumber string           `json:"trackingNumber"`
+				PackageAddress []PackageAddress `json:"packageAddress"`
 			} `json:"package"`
 			UserRelation []string `json:"userRelation"`
 		} `json:"shipment"`
 	} `json:"trackResponse"`
 }
 
-func (t TrackingDetails) GetPackageAddress(addressType PackageAddressType) *Address {
+func (t TrackingDetails) GetPackageAddress(addressTypeType PackageAddressType) *PackageAddress {
 	for _, ship := range t.TrackResponse.Shipment {
 		for _, pkg := range ship.Package {
 			for _, addr := range pkg.PackageAddress {
-				if addr.Type == addressType {
-					return &addr.Address
+				if addr.Type == addressTypeType {
+					return &addr
 				}
 			}
 		}

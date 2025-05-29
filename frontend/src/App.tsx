@@ -33,7 +33,7 @@ function App() {
 
     // Process image data from barcode scanner through websocket
     useEffect(() => {
-        if (readyState === ReadyState.OPEN && lastMessage !== null) {
+        if (readyState === ReadyState.OPEN && lastMessage !== null && scanState === "idle") {
             try {
                 const msg: ScannerResponse = JSON.parse(lastMessage.data);
                 if (msg.messageType === "image") {
@@ -51,7 +51,6 @@ function App() {
                                 setScanState("idle");
                             } else {
                                 errorBeep.play();
-                                toast.error("Invalid label. Reprint label.");
                                 setScanState("invalid");
                             }
                         }).catch((error) => {
@@ -73,7 +72,7 @@ function App() {
         sendJsonMessage(
             JSON.stringify({
                 scannerId: scannerId,
-                commandType: "image_mode",
+                commandType: "image_capture",
             })
         );
     }
@@ -104,23 +103,35 @@ function App() {
                 );
             case "invalid":
                 return (
-                    <div className="flex flex-col gap-16 items-center">
-                        <div className="flex flex-row gap-32">
-                            <div className="flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-8">
+                    <div className="w-full flex flex-col gap-16 items-center px-16">
+                        <div className="w-full flex flex-row gap-16">
+                            <div className="w-1/2 flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-8 gap-8">
                                 <div className="w-full text-start text-xl">Scanned</div>
-                                <img src={`data:image/jpeg;charset=utf-8;base64,${barcodeScannerImage}`} alt="Scanned Label" className="w-96 h-96" />
+                                <img src={`data:image/jpeg;charset=utf-8;base64,${barcodeScannerImage}`} alt="Scanned Label" className="h-96" />
                             </div>
-                            <div className="flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-8">
-                                <div className="w-full text-start text-xl">Expected</div>
-                                {result?.expectedAddress?.addressLine1}<br />
-                                {result?.expectedAddress?.addressLine2 && `${result?.expectedAddress?.addressLine2}<br />`}
-                                {result?.expectedAddress?.city}, {result?.expectedAddress?.stateProvince} {result?.expectedAddress?.postalCode}
+                            <div className="w-1/2 flex flex-col border-2 border-black rounded-[40px] p-8">
+                                <div className="w-full text-start text-xl pb-8">Expected</div>
+                                <div className="font-bold">SHIP TO:</div>
+                                <div className="h-full flex flex-col text-start pl-4">
+                                    <div>{result?.expectedAddress?.name}{result?.expectedAddress?.name && <br />}</div>
+                                    <div>{result?.expectedAddress?.attentionName}{result?.expectedAddress?.attentionName && <br />}</div>
+                                    <div>{result?.expectedAddress?.address?.addressLine1}<br /></div>
+                                    <div>{result?.expectedAddress?.address?.addressLine2}{result?.expectedAddress?.address?.addressLine2 && <br />}</div>
+                                    <div className="font-bold">
+                                        {result?.expectedAddress?.address?.city}, {result?.expectedAddress?.address?.stateProvince} {result?.expectedAddress?.address?.postalCode}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="w-64 p-4 border-4 border-[#301506] bg-[#301506] rounded-lg text-4xl text-[#FAB80A] cursor-pointer text-center" onClick={() => {
-                            toast.success("Reprinted. Reprint label.");
-                            setScanState("idle");
-                        }}>Reprint label</div>
+                        <div className="flex flex-row gap-8">
+                            <div className="w-64 p-4 border-4 border-[#301506] rounded-lg text-4xl text-[#301506] cursor-pointer text-center" onClick={() => {
+                                setScanState("idle");
+                            }}>Retry</div>
+                            <div className="w-64 p-4 border-4 border-[#301506] bg-[#301506] rounded-lg text-4xl text-[#FAB80A] cursor-pointer text-center" onClick={() => {
+                                toast.success("Reprinted. Scan next label.");
+                                setScanState("idle");
+                            }}>Reprint label</div>
+                        </div>
                     </div>
                 );
         }
@@ -133,6 +144,7 @@ function App() {
                     <img src="/ups.svg" alt="UPS Logo" className="w-16 h-16 p-4" />
                     <div className="text-2xl text-[#FAB80A]">Validate</div>
                 </div>
+                {scanState === "invalid" && <div className="w-full text-2xl text-center bg-red-500 text-white p-2">Invalid label detected</div>}
                 <div className="flex flex-col h-full w-full items-center justify-center">
                     {getBody()}
                 </div>

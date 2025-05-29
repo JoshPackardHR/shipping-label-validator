@@ -1,11 +1,12 @@
-Read the ship to shipping address and tracking number from the provided image.
+Read the "ship to" shipping address from the provided image of a shipping label.
 Only return data from the provided image.
-The tracking number always starts with the two characters "1Z" and is always 18 characters in length. Remove any spaces from the tracking number.
 The ship to shipping address is a fully formatted address and is located below the from address.
-The image may be rotated, and if it is rotated be sure to rotate it to a normal orientation before reading.
 If the image is not readable, return an error that says "Image not readable. Please try again".
-Return a JSON document with three fields:
-- the ship to shipping address as "shipTo"
-- the tracking number "trackingNumber"
-- an error message if something went wrong "error"
+Return a JSON document with the following fields:
+- "addressLine1" the first line of the street address. This may be located below the lines containing name of the company or a phone number. This will always be above the line with the city, state, and postal code
+- "addressLine2" the second line of the street address, which may not be present. If missing this should be blank.
+- "city" the city of the address
+- "stateProvince" the state or province of the address
+- "postalCode" the postal code of the address
+- "error" a message explaining what went wrong
 Always return in the JSON document even if something goes wrong, and never return a different format.

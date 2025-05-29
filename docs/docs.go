@@ -72,6 +72,49 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "Address": {
+            "type": "object",
+            "properties": {
+                "addressLine1": {
+                    "type": "string"
+                },
+                "addressLine2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "countryCode": {
+                    "type": "string"
+                },
+                "postalCode": {
+                    "type": "string"
+                },
+                "stateProvince": {
+                    "type": "string"
+                }
+            }
+        },
+        "PackageAddress": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "$ref": "#/definitions/Address"
+                },
+                "attentionName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "ValidationError": {
             "type": "object",
             "properties": {
@@ -103,39 +146,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "expectedAddress": {
-                    "$ref": "#/definitions/ups.Address"
+                    "$ref": "#/definitions/PackageAddress"
                 },
                 "scannedAddress": {
-                    "$ref": "#/definitions/ups.Address"
+                    "$ref": "#/definitions/Address"
                 },
                 "valid": {
                     "type": "boolean"
-                }
-            }
-        },
-        "ups.Address": {
-            "type": "object",
-            "properties": {
-                "addressLine1": {
-                    "type": "string"
-                },
-                "addressLine2": {
-                    "type": "string"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "countryCode": {
-                    "type": "string"
-                },
-                "postalCode": {
-                    "type": "string"
-                },
-                "stateProvince": {
-                    "type": "string"
                 }
             }
         }

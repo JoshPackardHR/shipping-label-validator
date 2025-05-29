@@ -12,7 +12,7 @@ type Manager interface {
 }
 
 type ValidationResult struct {
-	ScannedAddress  ups.Address `json:"scannedAddress"`
-	ExpectedAddress ups.Address `json:"expectedAddress"`
-	Valid           bool        `json:"valid"`
+	ScannedAddress         ups.Address        `json:"scannedAddress"`
+	ExpectedPackageAddress ups.PackageAddress `json:"expectedAddress"`
+	Valid                  bool               `json:"valid"`
 } // @name ValidationResult

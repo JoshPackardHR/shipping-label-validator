@@ -34,9 +34,8 @@ func NewManager(
 }
 
 type promptResponse struct {
-	ShipTo         string `json:"shipTo"`
-	TrackingNumber string `json:"trackingNumber"`
-	Error          string `json:"error"`
+	ups.Address
+	Error string `json:"error"`
 }
 
 // TODO: Store results in the database
@@ -55,8 +54,6 @@ func (m *manager) Validate(ctx context.Context, trackingNumber string, img image
 	if err := json.Unmarshal([]byte(result.Content), &promptResp); err != nil {
 		return nil, err
 	}
-	// TODO: Parse scanned address better
-	scannedAddress := ups.Address{AddressLine1: promptResp.ShipTo}
 
 	// Call UPS API to get the address for the tracking number
 	trackingDetails, err := m.upsClient.GetTrackingDetails(trackingNumber)
@@ -70,13 +67,16 @@ func (m *manager) Validate(ctx context.Context, trackingNumber string, img image
 
 	// Compare the address from the image with the address from the UPS API
 	return &models.ValidationResult{
-		ScannedAddress:  scannedAddress,
-		ExpectedAddress: *expectedAddress,
-		Valid:           compareAddresses(scannedAddress, *expectedAddress),
+		ScannedAddress:         promptResp.Address,
+		ExpectedPackageAddress: *expectedAddress,
+		Valid:                  compareAddresses(promptResp.Address, expectedAddress.Address),
 	}, nil
 }
 
 func compareAddresses(address1, address2 ups.Address) bool {
-	// TODO: Compare addresses better
-	return strings.Contains(strings.ToLower(address1.AddressLine1), strings.ToLower(address2.AddressLine1))
+	return strings.EqualFold(address1.AddressLine1, address2.AddressLine1) &&
+		strings.EqualFold(address1.AddressLine2, address2.AddressLine2) &&
+		strings.EqualFold(address1.City, address2.City) &&
+		strings.EqualFold(address1.StateProvince, address2.StateProvince) &&
+		strings.EqualFold(address1.PostalCode, address2.PostalCode)
 }

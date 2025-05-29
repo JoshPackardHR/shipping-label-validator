@@ -20,6 +20,13 @@ export interface UpsAddress {
   stateProvince?: string;
 }
 
+export interface UpsPackageAddress {
+  address?: UpsAddress;
+  attentionName?: string;
+  name?: string;
+  type?: string;
+}
+
 export interface ValidationError {
   error?: string;
 }
@@ -34,7 +41,7 @@ export interface ValidationResponse {
 }
 
 export interface ValidationResult {
-  expectedAddress?: UpsAddress;
+  expectedAddress?: UpsPackageAddress;
   scannedAddress?: UpsAddress;
   valid?: boolean;
 }
