@@ -35,7 +35,8 @@ func NewManager(
 
 type promptResponse struct {
 	ups.Address
-	Error string `json:"error"`
+	TrackingNumber string `json:"trackingNumber"`
+	Error          string `json:"error"`
 }
 
 // TODO: Store results in the database
@@ -56,6 +57,9 @@ func (m *manager) Validate(ctx context.Context, trackingNumber string, img image
 	}
 
 	// Call UPS API to get the address for the tracking number
+	if trackingNumber == "" {
+		trackingNumber = promptResp.TrackingNumber
+	}
 	trackingDetails, err := m.upsClient.GetTrackingDetails(trackingNumber)
 	if err != nil {
 		return nil, err

@@ -1,6 +1,6 @@
 
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ScannerResponse } from './BarcodeScanner';
 import { Shipping } from './generated/Shipping';
 import type { ValidationResponse, ValidationResult } from './generated/data-contracts';
@@ -23,6 +23,7 @@ function App() {
         reconnectAttempts: 100000, // Always retry
         reconnectInterval: 3 * 1000, // Reconnect attempt interval in milliseconds
     });
+    const mobileCameraRef = useRef<HTMLInputElement>(null);
     const [scanState, setScanState] = useState<"idle" | "validating" | "invalid">("idle"); // Possible states: idle, scanning, processing
     const [barcode, setBarcode] = useState("");
     const [barcodeScannerImage, setBarcodeScannerImage] = useState("");
@@ -77,21 +78,78 @@ function App() {
         );
     }
 
+    const convertBase64 = (file: File) => {
+        return new Promise<string>((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result as string);
+            };
+
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
+
     const getBody = () => {
         switch (scanState) {
             case "idle":
                 return (
-                    <div
-                        className="flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-16 gap-4">
-                        <div className="text-8xl text-[#301506]">Scan a label</div>
-                        <div className="text-2xl text-black">From a foot away, so you get all of it</div>
-                        <img src="/scan-label.svg" alt="Scan Label" className="w-64 h-64 mt-8" />
+                    <div className="flex flex-col gap-8 items-center">
+                        <div
+                            className="flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-16 gap-4">
+                            <div className="text-5xl lg:text-8xl text-[#301506]">Scan a label</div>
+                            <div className="text-sm lg:text-2xl text-black">From a foot away, so you get all of it</div>
+                            <img src="/scan-label.svg" alt="Scan Label" className="lg:w-64 lg:h-64 mt-8" />
+                        </div>
+                        <input
+                            ref={mobileCameraRef}
+                            style={{ display: "none" }}
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={async (e) => {
+                                if (e.target.files === null) {
+                                    toast("No file selected");
+                                    return;
+                                }
+
+                                const file = e.target.files[0];
+                                const base64Image = await convertBase64(file);
+                                setScanState("validating");
+                                setBarcodeScannerImage(base64Image);
+
+                                shippingApi.labelValidateCreate({
+                                    trackingNumber: barcode,
+                                    image: base64Image.split(",")[1],
+                                })
+                                    .then(({ data }: { data: ValidationResponse }) => {
+                                        setResult(data.result);
+                                        if (data.result?.valid) {
+                                            successBeep.play();
+                                            toast.success("Valid. Scan next label.");
+                                            setScanState("idle");
+                                        } else {
+                                            errorBeep.play();
+                                            setScanState("invalid");
+                                        }
+                                    }).catch((error) => {
+                                        toast.error("Error validating:", error);
+                                        setScanState("idle");
+                                    });
+                            }}
+                        />
+                        <div className="lg:hidden w-64 p-4 border-4 border-[#301506] bg-[#301506] rounded-lg text-4xl text-[#FAB80A] cursor-pointer text-center" onClick={() => {
+                            mobileCameraRef?.current?.click();
+                        }}>Scan label</div>
                     </div>
                 );
             case "validating":
                 return (
-                    <div className="flex flex-col items-center justify-center gap-8">
-                        <div className="text-2xl">Validating</div>
+                    <div className="h-full flex flex-col items-center justify-center gap-8">
+                        <div className="text-2xl mt-32 lg:mt-0">Validating</div>
                         <ClipLoader
                             color="#000000"
                             loading={true}
@@ -103,13 +161,13 @@ function App() {
                 );
             case "invalid":
                 return (
-                    <div className="w-full flex flex-col gap-16 items-center px-16">
+                    <div className="w-full flex flex-col gap-16 items-center lg:px-16">
                         <div className="w-full flex flex-row gap-16">
-                            <div className="w-1/2 flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-8 gap-8">
+                            <div className="w-1/2 hidden lg:flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-8 gap-8">
                                 <div className="w-full text-start text-xl">Scanned</div>
                                 <img src={`data:image/jpeg;charset=utf-8;base64,${barcodeScannerImage}`} alt="Scanned Label" className="h-96" />
                             </div>
-                            <div className="w-1/2 flex flex-col border-2 border-black rounded-[40px] p-8">
+                            <div className="w-full lg:w-1/2 flex flex-col border-2 border-black rounded-[40px] p-8">
                                 <div className="w-full text-start text-xl pb-8">Expected</div>
                                 <div className="font-bold">SHIP TO:</div>
                                 <div className="h-full flex flex-col text-start pl-4">
@@ -123,7 +181,7 @@ function App() {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-row gap-8">
+                        <div className="flex flex-col lg:flex-row gap-8">
                             <div className="w-64 p-4 border-4 border-[#301506] rounded-lg text-4xl text-[#301506] cursor-pointer text-center" onClick={() => {
                                 setScanState("idle");
                             }}>Retry</div>
@@ -145,7 +203,7 @@ function App() {
                     <div className="text-2xl text-[#FAB80A]">Validate</div>
                 </div>
                 {scanState === "invalid" && <div className="w-full text-2xl text-center bg-red-500 text-white p-2">Invalid label detected</div>}
-                <div className="flex flex-col h-full w-full items-center justify-center">
+                <div className="flex flex-col lg:h-full w-full items-center lg:justify-center p-4">
                     {getBody()}
                 </div>
             </div>
