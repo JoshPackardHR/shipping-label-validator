@@ -97,9 +97,9 @@ function App() {
         switch (scanState) {
             case "idle":
                 return (
-                    <div className="flex flex-col gap-8 items-center">
+                    <div className="flex flex-col gap-8 items-center justify-center">
                         <div
-                            className="flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-16 gap-4">
+                            className="hidden lg:flex flex-col items-center justify-center border-2 border-black rounded-[40px] p-16 gap-4">
                             <div className="text-5xl lg:text-8xl text-[#301506]">Scan a label</div>
                             <div className="text-sm lg:text-2xl text-black">From a foot away, so you get all of it</div>
                             <img src="/scan-label.svg" alt="Scan Label" className="lg:w-64 lg:h-64 mt-8" />
@@ -141,9 +141,9 @@ function App() {
                                     });
                             }}
                         />
-                        <div className="lg:hidden w-64 p-4 border-4 border-[#301506] bg-[#301506] rounded-lg text-4xl text-[#FAB80A] cursor-pointer text-center" onClick={() => {
+                        <div className="lg:hidden mt-64 w-64 p-4 border-4 border-[#301506] bg-[#301506] rounded-lg text-4xl text-[#FAB80A] cursor-pointer text-center" onClick={() => {
                             mobileCameraRef?.current?.click();
-                        }}>Scan label</div>
+                        }}>Take picture</div>
                     </div>
                 );
             case "validating":
@@ -203,7 +203,7 @@ function App() {
                     <div className="text-2xl text-[#FAB80A]">Validate</div>
                 </div>
                 {scanState === "invalid" && <div className="w-full text-2xl text-center bg-red-500 text-white p-2">Invalid label detected</div>}
-                <div className="flex flex-col lg:h-full w-full items-center lg:justify-center p-4">
+                <div className="flex flex-col h-full w-full items-center lg:justify-center p-4">
                     {getBody()}
                 </div>
             </div>
