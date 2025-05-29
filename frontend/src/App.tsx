@@ -149,7 +149,7 @@ function App() {
             case "validating":
                 return (
                     <div className="h-full flex flex-col items-center justify-center gap-8">
-                        <div className="text-2xl mt-32 lg:mt-0">Validating</div>
+                        <div className="text-2xl lg:mt-0">Validating</div>
                         <ClipLoader
                             color="#000000"
                             loading={true}
