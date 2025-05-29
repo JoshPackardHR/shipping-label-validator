@@ -1,4 +1,4 @@
-module github.com/happyreturns/shipping-label-checker
+module github.com/JoshuaPackardHR/shipping-label-validator
 
 go 1.24.3
 

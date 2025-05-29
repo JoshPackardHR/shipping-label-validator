@@ -10,9 +10,9 @@ import (
 	"image/jpeg"
 	"strings"
 
-	"github.com/happyreturns/shipping-label-checker/gpt"
-	"github.com/happyreturns/shipping-label-checker/internal/shipping/models"
-	"github.com/happyreturns/shipping-label-checker/ups"
+	"github.com/JoshuaPackardHR/shipping-label-validator/gpt"
+	"github.com/JoshuaPackardHR/shipping-label-validator/internal/shipping/models"
+	"github.com/JoshuaPackardHR/shipping-label-validator/ups"
 )
 
 //go:embed prompt.txt

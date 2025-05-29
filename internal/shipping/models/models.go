@@ -4,7 +4,7 @@ import (
 	"context"
 	"image"
 
-	"github.com/happyreturns/shipping-label-checker/ups"
+	"github.com/JoshuaPackardHR/shipping-label-validator/ups"
 )
 
 type Manager interface {

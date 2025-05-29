@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/JoshuaPackardHR/shipping-label-validator/internal/shipping/models"
 	"github.com/gin-gonic/gin"
-	"github.com/happyreturns/shipping-label-checker/internal/shipping/models"
 	"github.com/inpersondonations/helpers/api"
 )
 

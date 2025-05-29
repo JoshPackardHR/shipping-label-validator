@@ -8,14 +8,14 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/JoshuaPackardHR/shipping-label-validator/docs"
+	"github.com/JoshuaPackardHR/shipping-label-validator/gpt"
+	"github.com/JoshuaPackardHR/shipping-label-validator/internal/shipping"
+	"github.com/JoshuaPackardHR/shipping-label-validator/ups"
 	"github.com/getsentry/sentry-go"
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/happyreturns/shipping-label-checker/docs"
-	"github.com/happyreturns/shipping-label-checker/gpt"
-	"github.com/happyreturns/shipping-label-checker/internal/shipping"
-	"github.com/happyreturns/shipping-label-checker/ups"
 	"github.com/inpersondonations/helpers/logger"
 	mongoutil "github.com/inpersondonations/helpers/mongo"
 	"github.com/joho/godotenv"
@@ -29,9 +29,9 @@ import (
 //go:generate swag init
 //go:generate swag fmt
 
-//	@title			Shipping Label Checker API
+//	@title			Shipping Label Validator API
 //	@version		1.0
-//	@description	Public API for Shipping Label Checker
+//	@description	Public API for Shipping Label Validator
 //	@termsOfService	http://happyreturns.com/terms/
 
 //	@contact.name	API Support
@@ -64,10 +64,10 @@ func main() {
 	switch environment {
 	case "production":
 		docs.SwaggerInfo.Schemes = []string{"https"}
-		docs.SwaggerInfo.Host = "shipping-label-checker-api.happyreturns.com"
+		docs.SwaggerInfo.Host = "shipping-label-validator-api.happyreturns.com"
 	case "staging":
 		docs.SwaggerInfo.Schemes = []string{"https"}
-		docs.SwaggerInfo.Host = "shipping-label-checker-api-staging.happyreturns.com"
+		docs.SwaggerInfo.Host = "shipping-label-validator-api-staging.happyreturns.com"
 	}
 
 	// Initialize Sentry's handler
