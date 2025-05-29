@@ -10,14 +10,31 @@
  * ---------------------------------------------------------------
  */
 
-export interface ShippingError {
+export interface UpsAddress {
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  country?: string;
+  countryCode?: string;
+  postalCode?: string;
+  stateProvince?: string;
+}
+
+export interface ValidationError {
   error?: string;
 }
 
-export interface ShippingRequest {
+export interface ValidationRequest {
   image?: string;
+  trackingNumber?: string;
 }
 
-export interface ShippingResponse {
+export interface ValidationResponse {
+  result?: ValidationResult;
+}
+
+export interface ValidationResult {
+  expectedAddress?: UpsAddress;
+  scannedAddress?: UpsAddress;
   valid?: boolean;
 }

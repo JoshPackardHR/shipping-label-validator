@@ -1,0 +1,11 @@
+Read the ship to shipping address and tracking number from the provided image.
+Only return data from the provided image.
+The tracking number always starts with the two characters "1Z" and is always 18 characters in length. Remove any spaces from the tracking number.
+The ship to shipping address is a fully formatted address and is located below the from address.
+The image may be rotated, and if it is rotated be sure to rotate it to a normal orientation before reading.
+If the image is not readable, return an error that says "Image not readable. Please try again".
+Return a JSON document with three fields:
+- the ship to shipping address as "shipTo"
+- the tracking number "trackingNumber"
+- an error message if something went wrong "error"
+Always return in the JSON document even if something goes wrong, and never return a different format.

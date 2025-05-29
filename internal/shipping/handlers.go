@@ -1,7 +1,10 @@
 package shipping
 
 import (
+	"encoding/base64"
+	"image/jpeg"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/happyreturns/shipping-label-checker/internal/shipping/models"
@@ -17,20 +20,21 @@ func NewHandler(manager models.Manager) *handler {
 }
 
 func (h *handler) RegisterRoutes(router *gin.RouterGroup) {
-	router.POST("/label/check", h.login)
+	router.POST("/label/validate", h.validate)
 }
 
-type ShippingRequest struct {
-	Image string `json:"image"`
-} // @name ShippingRequest
+type ValidationRequest struct {
+	TrackingNumber string `json:"trackingNumber"`
+	Image          string `json:"image"`
+} // @name ValidationRequest
 
-type ShippingResponse struct {
-	Valid bool `json:"valid"`
-} // @name ShippingResponse
+type ValidationResponse struct {
+	Result models.ValidationResult `json:"result"`
+} // @name ValidationResponse
 
-type ShippingError struct {
+type ValidationError struct {
 	Error string `json:"error"`
-} // @name ShippingError
+} // @name ValidationError
 
 // login godoc
 //
@@ -39,22 +43,30 @@ type ShippingError struct {
 //	@Tags			shipping
 //	@Accept			json
 //	@Produce		json
-//	@Param			requestBody	body		ShippingRequest	true	"Shipping Label Request"
-//	@Success		200			{object}	ShippingResponse
-//	@Failure		400,500		{object}	ShippingError
-//	@Router			/shipping/label/check [post]
-func (h *handler) login(c *gin.Context) {
-	shippingRequest := ShippingRequest{}
-	if err := c.BindJSON(&shippingRequest); err != nil {
-		c.JSON(http.StatusBadRequest, ShippingError{Error: err.Error()})
+//	@Param			requestBody	body		ValidationRequest	true	"Validation Request"
+//	@Success		200			{object}	ValidationResponse
+//	@Failure		400,500		{object}	ValidationError
+//	@Router			/shipping/label/validate [post]
+func (h *handler) validate(c *gin.Context) {
+	request := ValidationRequest{}
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, ValidationError{Error: err.Error()})
 		return
 	}
 
-	valid, err := h.manager.CheckLabel(c, shippingRequest.Image)
+	// parse base64 image to native image
+	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(request.Image))
+	image, err := jpeg.Decode(reader)
 	if err != nil {
 		api.HandleError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, ShippingResponse{Valid: valid})
+	result, err := h.manager.Validate(c, request.TrackingNumber, image)
+	if err != nil {
+		api.HandleError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, ValidationResponse{Result: *result})
 }

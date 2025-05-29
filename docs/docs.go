@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/shipping/label/check": {
+        "/shipping/label/validate": {
             "post": {
                 "description": "check a shipping label",
                 "consumes": [
@@ -39,12 +39,12 @@ const docTemplate = `{
                 "summary": "Check a shipping label",
                 "parameters": [
                     {
-                        "description": "Shipping Label Request",
+                        "description": "Validation Request",
                         "name": "requestBody",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ShippingRequest"
+                            "$ref": "#/definitions/ValidationRequest"
                         }
                     }
                 ],
@@ -52,19 +52,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/ShippingResponse"
+                            "$ref": "#/definitions/ValidationResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/ShippingError"
+                            "$ref": "#/definitions/ValidationError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/ShippingError"
+                            "$ref": "#/definitions/ValidationError"
                         }
                     }
                 }
@@ -72,7 +72,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "ShippingError": {
+        "ValidationError": {
             "type": "object",
             "properties": {
                 "error": {
@@ -80,19 +80,62 @@ const docTemplate = `{
                 }
             }
         },
-        "ShippingRequest": {
+        "ValidationRequest": {
             "type": "object",
             "properties": {
                 "image": {
                     "type": "string"
+                },
+                "trackingNumber": {
+                    "type": "string"
                 }
             }
         },
-        "ShippingResponse": {
+        "ValidationResponse": {
             "type": "object",
             "properties": {
+                "result": {
+                    "$ref": "#/definitions/ValidationResult"
+                }
+            }
+        },
+        "ValidationResult": {
+            "type": "object",
+            "properties": {
+                "expectedAddress": {
+                    "$ref": "#/definitions/ups.Address"
+                },
+                "scannedAddress": {
+                    "$ref": "#/definitions/ups.Address"
+                },
                 "valid": {
                     "type": "boolean"
+                }
+            }
+        },
+        "ups.Address": {
+            "type": "object",
+            "properties": {
+                "addressLine1": {
+                    "type": "string"
+                },
+                "addressLine2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "countryCode": {
+                    "type": "string"
+                },
+                "postalCode": {
+                    "type": "string"
+                },
+                "stateProvince": {
+                    "type": "string"
                 }
             }
         }

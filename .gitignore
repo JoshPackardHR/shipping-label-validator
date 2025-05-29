@@ -25,3 +25,4 @@ docs/*.yaml
 
 docker_data
 .DS_Store
+__debug_bin*

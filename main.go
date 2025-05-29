@@ -13,7 +13,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/happyreturns/shipping-label-checker/docs"
+	"github.com/happyreturns/shipping-label-checker/gpt"
 	"github.com/happyreturns/shipping-label-checker/internal/shipping"
+	"github.com/happyreturns/shipping-label-checker/ups"
 	"github.com/inpersondonations/helpers/logger"
 	mongoutil "github.com/inpersondonations/helpers/mongo"
 	"github.com/joho/godotenv"
@@ -120,8 +122,16 @@ func main() {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	latest := router.Group("/api/latest")
+	upsClient, err := ups.NewClient(os.Getenv("UPS_CLIENT_ID"), os.Getenv("UPS_CLIENT_SECRET"))
+	if err != nil {
+		log.Fatalf("Failed to initialize UPS client: %v", err)
+	}
+	openAi, err := gpt.NewOpenAI(os.Getenv("OPENAI_MODEL"), os.Getenv("OPENAI_API_KEY"))
+	if err != nil {
+		log.Fatalf("Failed to initialize OpenAI client: %v", err)
+	}
 	shipping.NewHandler(
-		shipping.NewManager(),
+		shipping.NewManager(upsClient, openAi),
 	).RegisterRoutes(latest.Group("/shipping"))
 
 	httpPort := ":" + os.Getenv("HTTP_PORT")

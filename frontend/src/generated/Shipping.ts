@@ -10,7 +10,7 @@
  * ---------------------------------------------------------------
  */
 
-import { ShippingError, ShippingRequest, ShippingResponse } from "./data-contracts";
+import { ValidationError, ValidationRequest, ValidationResponse } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class Shipping<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
@@ -18,13 +18,13 @@ export class Shipping<SecurityDataType = unknown> extends HttpClient<SecurityDat
    * @description check a shipping label
    *
    * @tags shipping
-   * @name LabelCheckCreate
+   * @name LabelValidateCreate
    * @summary Check a shipping label
-   * @request POST:/shipping/label/check
+   * @request POST:/shipping/label/validate
    */
-  labelCheckCreate = (requestBody: ShippingRequest, params: RequestParams = {}) =>
-    this.request<ShippingResponse, ShippingError>({
-      path: `/shipping/label/check`,
+  labelValidateCreate = (requestBody: ValidationRequest, params: RequestParams = {}) =>
+    this.request<ValidationResponse, ValidationError>({
+      path: `/shipping/label/validate`,
       method: "POST",
       body: requestBody,
       type: ContentType.Json,

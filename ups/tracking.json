@@ -1,0 +1,115 @@
+{
+    "trackResponse": {
+        "shipment": [
+            {
+                "inquiryNumber": "1ZG416G10300026210",
+                "shipmentType": "S",
+                "shipperNumber": "G416G1",
+                "pickupDate": "20250529",
+                "package": [
+                    {
+                        "trackingNumber": "1ZG416G10300026210",
+                        "deliveryDate": [
+                            {
+                                "type": "SDD",
+                                "date": "20250530"
+                            }
+                        ],
+                        "deliveryTime": {
+                            "startTime": "141500",
+                            "type": "EDW",
+                            "endTime": "161500"
+                        },
+                        "activity": [
+                            {
+                                "location": {
+                                    "address": {
+                                        "countryCode": "US",
+                                        "country": "US"
+                                    }
+                                },
+                                "status": {
+                                    "type": "M",
+                                    "description": "Shipper created a label, UPS has not received the package yet. ",
+                                    "code": "MP",
+                                    "statusCode": "003"
+                                },
+                                "date": "20250529",
+                                "time": "103523",
+                                "gmtDate": "20250529",
+                                "gmtOffset": "-06:00",
+                                "gmtTime": "16:35:23"
+                            }
+                        ],
+                        "currentStatus": {
+                            "description": "Shipment Ready for UPS",
+                            "code": "003"
+                        },
+                        "packageAddress": [
+                            {
+                                "type": "ORIGIN",
+                                "name": "IN-PERSON DONATIONS INC",
+                                "attentionName": "",
+                                "address": {
+                                    "addressLine1": "S 2711 QUEBEC ST ",
+                                    "addressLine2": "",
+                                    "city": "DENVER",
+                                    "stateProvince": "CO",
+                                    "postalCode": "802314143",
+                                    "countryCode": "US",
+                                    "country": "US"
+                                }
+                            },
+                            {
+                                "type": "DESTINATION",
+                                "name": "IN-PERSON DONATIONS INC",
+                                "attentionName": "IN-PERSON DONATIONS INC",
+                                "address": {
+                                    "addressLine1": "2711 S QUEBEC ST",
+                                    "addressLine2": "",
+                                    "city": "DENVER",
+                                    "stateProvince": "CO",
+                                    "postalCode": "80231",
+                                    "countryCode": "US",
+                                    "country": "US"
+                                }
+                            }
+                        ],
+                        "declaredValue": {
+                            "declaredValueIndicator": "P",
+                            "declaredValue": "50.00",
+                            "declaredValueCurrencyCode": "USD"
+                        },
+                        "weight": {
+                            "unitOfMeasurement": "LBS",
+                            "weight": "1.00"
+                        },
+                        "service": {
+                            "code": "518",
+                            "levelCode": "003",
+                            "description": "UPS Ground"
+                        },
+                        "deliveryInformation": {
+                            "deliveryPhoto": {
+                                "isNonPostalCodeCountry": false,
+                                "isProximityMapViewable": false
+                            }
+                        },
+                        "taxIndicator": "false",
+                        "dimension": {
+                            "height": "1.00",
+                            "length": "5.00",
+                            "width": "5.00",
+                            "unitOfDimension": "IN"
+                        },
+                        "isSmartPackage": false,
+                        "packageCount": 1
+                    }
+                ],
+                "userRelation": [
+                    "SHIPPER"
+                ]
+            }
+        ]
+    }
+}
