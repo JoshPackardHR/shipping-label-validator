@@ -39,7 +39,7 @@ type promptResponse struct {
 	Error          string `json:"error"`
 }
 
-// TODO: Store results in the database
+// TODO: Store validation results in the database
 func (m *manager) Validate(ctx context.Context, trackingNumber string, img image.Image) (*models.ValidationResult, error) {
 	imageBytes := new(bytes.Buffer)
 	if err := jpeg.Encode(imageBytes, img, nil); err != nil {

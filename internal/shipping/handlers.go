@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/JoshuaPackardHR/shipping-label-validator/helpers"
 	"github.com/JoshuaPackardHR/shipping-label-validator/internal/shipping/models"
 	"github.com/gin-gonic/gin"
-	"github.com/inpersondonations/helpers/api"
 )
 
 type handler struct {
@@ -58,13 +58,13 @@ func (h *handler) validate(c *gin.Context) {
 	reader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(request.Image))
 	image, err := jpeg.Decode(reader)
 	if err != nil {
-		api.HandleError(c, err)
+		helpers.HandleError(c, err)
 		return
 	}
 
 	result, err := h.manager.Validate(c, request.TrackingNumber, image)
 	if err != nil {
-		api.HandleError(c, err)
+		helpers.HandleError(c, err)
 		return
 	}
 
